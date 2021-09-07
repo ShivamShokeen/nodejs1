@@ -25,3 +25,21 @@
 #container a {
   text-decoration: none;
 }
+.hr {
+  border-bottom: 1px solid #ccc;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.cursorPointer  {
+  cursor: pointer;
+}
+.logincss{
+  float : right;
+  cursor: pointer;
+}
+.registercss{
+  float : right;
+  cursor: pointer;
+  margin-right: 18px;
+}

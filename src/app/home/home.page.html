@@ -1,20 +1,30 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
-      Blank
+      <ion-text>GG Games</ion-text>
+      <ion-text [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign in'}" class="logincss">Sign In</ion-text>
+      &nbsp;&nbsp;
+      <ion-text class="registercss" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign up'}">Sign Up
+      </ion-text>
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-grid>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+    <ion-row *ngFor="let games of gamesList">
+      <ion-col>
+        <img src="games.image.data" height="300"> <br><br>
+        {{games.name}}
+      </ion-col>
+      <ion-col>
+        <ion-text><b>Description : </b> {{games.description ? games.description : 'N/A'}}</ion-text><br> <br>
+        <ion-text><b>Category :</b> {{games.category ? games.category : 'N/A'}}</ion-text><br><br>
+        <ion-text> <b>Price :</b> {{games.price ? games.price : 'N/A'}} </ion-text> <br> <br>
+        <ion-button color="success" shape="round">Add to cart</ion-button>
+      </ion-col>
+      <div class="hr"> </div>
+    </ion-row>
+  </ion-grid>
 </ion-content>
