@@ -31,7 +31,10 @@ export class SignupsigninPage implements OnInit {
   save(type) {
     if (type == 'register') {
       if (this.registerForm.valid) {
-        this.http.post('http://localhost:9000/add-registration', this.registerForm.value).subscribe((responseData) => { }, error => {
+        this.http.post('http://localhost:9000/add-registration', this.registerForm.value).subscribe((responseData) => { 
+          localStorage.setItem("userDetails",JSON.stringify(responseData));
+          this.router.navigate(['/home']).then(()=>{window.location.reload()});
+         }, error => {
           console.log("error", error);
           if (error.status == 401) {
             this.toastErrorMessage(this.registerForm.value.email + ' was already existed.');
@@ -54,7 +57,7 @@ export class SignupsigninPage implements OnInit {
       if (this.loginForm.valid) {
         this.http.post('http://localhost:9000/verify-login', this.loginForm.value).subscribe((responseData) => {
           localStorage.setItem("userDetails",JSON.stringify(responseData));
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home']).then(()=>{window.location.reload()});
         }, error => {
           if (error.status == 400) {
             if(error.error == 'Your password is wrong'){

@@ -97,7 +97,7 @@ app.post('/add-registration', parseJSon, (req, res) => {
                 connection.query("INSERT INTO registrations SET ?", registerPayload, (err, rows) => {
                     if (!err) {
                         console.log("Add Registration api hit else");
-                        res.send(rows);
+                        res.send({email: req.body.email, name: req.body.name, datetime: req.body.datetime});
                     } else {
                         console.log("Add Registration api hit with error else", err.message);
                         res.send(err);

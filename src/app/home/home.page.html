@@ -22,7 +22,7 @@
         <ion-text><b>Description : </b> {{games.description ? games.description : 'N/A'}}</ion-text><br> <br>
         <ion-text><b>Category :</b> {{games.category ? games.category : 'N/A'}}</ion-text><br><br>
         <ion-text> <b>Price :</b> {{games.price ? games.price : 'N/A'}} </ion-text> <br> <br>
-        <ion-button color="success" shape="round">Add to cart</ion-button>
+        <ion-button [disabled]="userDetailsLocalStorage == null ? true : false" color="success" shape="round">Add to cart</ion-button>
       </ion-col>
       <div class="hr"> </div>
     </ion-row>
