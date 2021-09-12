@@ -1,13 +1,14 @@
-var http = require('http');
 var mysql = require('mysql');
 const express = require('express');
-const { element } = require('protractor');
+
 var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-;var urlencodedparse = express.urlencoded({ extended: true});
-var parseJSon = express.json();
 var app = express();
+var parseJSon = express.json();
+const bcrypt = require('bcrypt');
+var nodemailer = require('nodemailer');
+
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'firstDatabase',
@@ -36,6 +37,7 @@ app.get('/get-registration', (rep, res) => {
     })
 });
 
+
 app.get('/get-games', (rep, res) => {
     connection.query('SELECT * FROM add_game', (err, rows, fields) => {
         if (err) {
@@ -44,8 +46,7 @@ app.get('/get-games', (rep, res) => {
         if (!err) {
             let arrayData = Object.values(JSON.parse(JSON.stringify(rows)));
             // console.log("rows",rows);
-            arrayData.forEach((element) =>{
-                console.log("f",element.image.data);
+            arrayData.forEach((element) => {
                 var base64data = Buffer.from(element.image.data).toString('base64');
                 // element.image.data = base64data;
             })
@@ -58,8 +59,15 @@ app.get('/get-games', (rep, res) => {
     })
 });
 
-// urlencodedparse
 app.post('/add-registration', parseJSon, (req, res) => {
+    // nodemailer
+    let registerPayload = req.body;
+    // Hash Password bycrypt starts
+    const hash = bcrypt.hashSync(registerPayload.password, bcrypt.genSaltSync(10));
+    registerPayload.password = hash;
+    console.log("registerPayload", registerPayload);
+    // Hash Password bycrypt ends
+
     connection.query("SELECT * FROM registrations", (err, rows, field) => {
         if (err) {
             res.send(err);
@@ -68,71 +76,67 @@ app.post('/add-registration', parseJSon, (req, res) => {
         if (!err) {
             let arrayData = Object.values(JSON.parse(JSON.stringify(rows)));
             if (arrayData.length > 0) {
-                let findData = arrayData.find((value) => value.email == req.body.email);
-                console.log("findData", findData);
+                let findData = arrayData.find((value) => value.email == registerPayload.email);
                 if (findData == undefined) {
-                    connection.query("INSERT INTO registrations(name,email,password) VALUES ('" + req.body.name + "', '" + req.body.email + "', '" + req.body.password + "');"), (err) => {
-                        if (err) {
-                            console.log('registration', err)
-                            res.send(err);
-                        }
+                    connection.query("INSERT INTO registrations SET ?", registerPayload, (err, rows) => {
                         if (!err) {
                             console.log("Add Registration api hit");
-                            res.status(200).send('Success');
+                            res.send('Successfully Registered');
+                        } else {
+                            console.log("Add Registration api hit with error", err.message);
+                            res.send(err);
                         }
-                    }
+                    })
                 }
                 else {
                     res.status(401).end('Email ID Exist');
                 }
             }
             else {
-                connection.query("INSERT INTO registrations(name,email,password) VALUES ('" + req.body.name + "', '" + req.body.email + "', '" + req.body.password + "');"), (err) => {
-                    if (err) {
-                        console.log('registration', err)
+                console.log("execute");
+                connection.query("INSERT INTO registrations SET ?", registerPayload, (err, rows) => {
+                    if (!err) {
+                        console.log("Add Registration api hit else");
+                        res.send(rows);
+                    } else {
+                        console.log("Add Registration api hit with error else", err.message);
                         res.send(err);
                     }
-                    if (!err) {
-                        console.log("Add Registration api hit");
-                        res.status(200).send('Success');
-                    }
-                }
+                })
             }
         }
     })
 });
 
-app.post('/verify-login',parseJSon,(req,res) =>{
-    console.log("login",req.body);
-
-    connection.query("SELECT * FROM registrations", (err,rows,field) =>{
-        if(err){
+app.post('/verify-login', parseJSon, (req, res) => {
+    connection.query("SELECT * FROM registrations", (err, rows, field) => {
+        if (err) {
             res.send(err);
         }
 
-        if(!err){
-            console.log("reg data",rows);
-            res.send(rows);
-        }
+        if (!err) {
+            let arrayData = Object.values(JSON.parse(JSON.stringify(rows)));
 
-        console.log("reg data",rows);
+            getEmail = arrayData.find((value) => value.email == req.body.email);
+
+            if (getEmail != undefined) {
+
+                const isValidPass = bcrypt.compareSync(req.body.password, getEmail.password);
+
+                if (isValidPass == true) {
+                    res.status(200).send({ email: getEmail.email, name: getEmail.name, datetime: getEmail.datetime });
+                }
+                else {
+                    res.status(400).end('Your password is wrong');
+                }
+            }
+
+            if (getEmail == undefined) {
+                res.status(400).end('Email id not exist');
+            }
+            console.log("Verify API hit");
+        }
     })
 });
 
-app.listen(9000, () => {})
-
-// http.createServer((req,res)=>{
-//     if(req.url == '/get-registration'){
-//         res.writeHead(200,{'Content-Type' : 'application/json'});
-//         connection.query('SELECT * FROM registrations', function(err, rows, fields) {
-//             if(err){
-//                 console.log("Registration api hit");
-//                 console.log("An error ocurred performing the query.");
-//                 return;
-//             }
-//             const result = Object.values(JSON.parse(JSON.stringify(rows)));
-//             res.end(rows);
-//         });
-
-//     }
-// }).listen(9001);
+app.listen(9000, () => { });

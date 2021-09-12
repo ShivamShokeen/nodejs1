@@ -2,10 +2,10 @@
   <ion-toolbar color="primary">
     <ion-title>
       <ion-text>GG Games</ion-text>
-      <ion-text [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign in'}" class="logincss">Sign In</ion-text>
+      <ion-text *ngIf="userDetailsLocalStorage != null" (click)="logout()" class="logoutcss">Logout</ion-text>
+      <ion-text *ngIf="userDetailsLocalStorage == null" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign in'}" class="logincss">Sign In</ion-text>
       &nbsp;&nbsp;
-      <ion-text class="registercss" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign up'}">Sign Up
-      </ion-text>
+      <ion-text *ngIf="userDetailsLocalStorage == null" class="registercss" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign up'}">Sign Up </ion-text> 
     </ion-title>
   </ion-toolbar>
 </ion-header>

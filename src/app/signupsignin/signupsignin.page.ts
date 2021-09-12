@@ -15,13 +15,14 @@ export class SignupsigninPage implements OnInit {
   registerForm = new FormGroup({
     name: new FormControl(''),
     email: new FormControl(''),
-    password: new FormControl('')
+    password: new FormControl(''),
+    datetime : new FormControl(new Date())
   });
   loginForm = new FormGroup({
     email: new FormControl(''),
     password: new FormControl('')
   });
-  constructor(private route: ActivatedRoute, private formBuilder: FormBuilder, public toastController: ToastController, public http: HttpClient,private router : Router) { }
+  constructor(private route: ActivatedRoute, private formBuilder: FormBuilder, public toastController: ToastController, public http: HttpClient, private router: Router) { }
 
   ngOnInit() {
     this.routeType = this.route.snapshot.queryParams.type;
@@ -30,18 +31,16 @@ export class SignupsigninPage implements OnInit {
   save(type) {
     if (type == 'register') {
       if (this.registerForm.valid) {
-        this.http.post('http://localhost:9000/add-registration', this.registerForm.value).subscribe((responseData) => {
-          responseData
-        }, error => {
-          console.log("error",error);
-          if(error.status == 401){
-            this.toastErrorMessage('This email id was already existed');
+        this.http.post('http://localhost:9000/add-registration', this.registerForm.value).subscribe((responseData) => { }, error => {
+          console.log("error", error);
+          if (error.status == 401) {
+            this.toastErrorMessage(this.registerForm.value.email + ' was already existed.');
           }
-          if(error.status == 200){
+          if (error.status == 200) {
             this.toastSuccessMessage('Register successfully');
-            // this.routeType = 'sign in';
+            this.routeType = 'sign in';
           }
-          if(error.status == 400){
+          if (error.status == 400) {
             this.toastErrorMessage(error.error.text);
           }
         });
@@ -54,14 +53,20 @@ export class SignupsigninPage implements OnInit {
     if (type == 'login') {
       if (this.loginForm.valid) {
         this.http.post('http://localhost:9000/verify-login', this.loginForm.value).subscribe((responseData) => {
+          localStorage.setItem("userDetails",JSON.stringify(responseData));
           this.router.navigate(['/home']);
-          // localStorage.setItem(responseData);
         }, error => {
-          if(error.status == 204){
-            this.toastErrorMessage('This email id was already exist');
-          }
-          if(error.status == 400){
-            this.toastErrorMessage(error.error.text);
+          if (error.status == 400) {
+            if(error.error == 'Your password is wrong'){
+              this.toastErrorMessage('Your password is wrong.')
+            }
+            else if(error.error == 'Email id not exist'){
+              this.toastErrorMessage('Email id not exist.')
+            }
+            else{
+              this.toastErrorMessage(error.error.text);
+            }
+            
           }
         });
       }

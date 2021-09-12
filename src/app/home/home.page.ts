@@ -8,9 +8,10 @@ import {HttpClient} from '@angular/common/http'
 export class HomePage {
 
   gamesList : any = [];
+  userDetailsLocalStorage : any;
 
   constructor(public http : HttpClient) {
-    
+    this.userDetailsLocalStorage = localStorage.getItem('userDetails');
     this.http.get('http://localhost:9000/get-games',{}).subscribe((responseData) =>{
       this.gamesList = responseData;
       console.log("this.gamesList",this.gamesList);
@@ -19,6 +20,12 @@ export class HomePage {
     this.http.get('http://localhost:9000/get-registration',{}).subscribe((responseData) =>{
       console.log("responseData registration",responseData);
     });
+
+    console.log("userDetailsLocalStorage",this.userDetailsLocalStorage);
+  }
+
+  logout(){
+    localStorage.clear();
   }
 
 }

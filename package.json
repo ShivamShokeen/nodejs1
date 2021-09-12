@@ -26,8 +26,10 @@
     "@capacitor/keyboard": "1.0.3",
     "@capacitor/status-bar": "1.0.3",
     "@ionic/angular": "^5.5.2",
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.6.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"
