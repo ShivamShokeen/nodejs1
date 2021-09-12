@@ -24,19 +24,6 @@ connection.connect(function (err) {
     }
 });
 
-app.get('/get-registration', (rep, res) => {
-    connection.query('SELECT * FROM registrations', (err, rows, fields) => {
-        if (err) {
-            console.log('registration', err)
-            res.send(err);
-        }
-        if (!err) {
-            console.log("Registration api hit");
-            res.send(rows);
-        }
-    })
-});
-
 
 app.get('/get-games', (rep, res) => {
     connection.query('SELECT * FROM add_game', (err, rows, fields) => {
@@ -46,15 +33,22 @@ app.get('/get-games', (rep, res) => {
         if (!err) {
             let arrayData = Object.values(JSON.parse(JSON.stringify(rows)));
             // console.log("rows",rows);
-            arrayData.forEach((element) => {
-                var base64data = Buffer.from(element.image.data).toString('base64');
-                // element.image.data = base64data;
-            })
-            var base64data = Buffer.from(arrayData[0].image.data).toString('base64');
-            // console.log("base64data",base64data);
-            // console.log("rows",rows.RowDataPacket.image);
+            console.log("arrayData",arrayData)
+            if(arrayData.length > 0){
+                arrayData.forEach((element) => {
+                    var base64data = Buffer.from(element.image.data).toString('base64');
+                    // element.image.data = base64data;
+                })
+                var base64data = Buffer.from(arrayData[0].image.data).toString('base64');
+                // console.log("base64data",base64data);
+                // console.log("rows",rows.RowDataPacket.image);
+                res.send(arrayData);    
+            }
+            else{
+                res.send([]);
+            }
             console.log("Get Games api hit");
-            res.send(arrayData);
+            
         }
     })
 });
