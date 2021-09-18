@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 const express = require('express');
+const {env} = './src/environments/environment.prod.ts';
 
 var app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -8,6 +9,9 @@ var app = express();
 var parseJSon = express.json();
 const bcrypt = require('bcrypt');
 var nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+var cors = require('cors');
+app.use(cors());
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -24,8 +28,31 @@ connection.connect(function (err) {
     }
 });
 
+// Middleware starts
 
-app.get('/get-games', (rep, res) => {
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const accessTokenSecret ='c6f6a6aff6f81ba0a6a121542ea81a9f332fa654989ab5b9989d9e6963a701c36d3190e5365693ad6ad3d703eb0dd1cf0da5a89494764031369d4ad0';  
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, accessTokenSecret, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+
+            req.user = user;
+            next();
+        });
+    } else {
+        res.sendStatus(401);
+    }
+};
+
+// Middleware ends
+
+
+app.get('/get-games', authenticateJWT, (rep, res) => {
     connection.query('SELECT * FROM add_game', (err, rows, fields) => {
         if (err) {
             res.send(err);
@@ -35,10 +62,8 @@ app.get('/get-games', (rep, res) => {
             // console.log("rows",rows);
             console.log("arrayData",arrayData)
             if(arrayData.length > 0){
-                arrayData.forEach((element) => {
-                    var base64data = Buffer.from(element.image.data).toString('base64');
-                    // element.image.data = base64data;
-                })
+                     var base64data = Buffer.from(element.image.data).toString('base64');
+                    // element.image.data = base64data; }
                 var base64data = Buffer.from(arrayData[0].image.data).toString('base64');
                 // console.log("base64data",base64data);
                 // console.log("rows",rows.RowDataPacket.image);
@@ -118,7 +143,9 @@ app.post('/verify-login', parseJSon, (req, res) => {
                 const isValidPass = bcrypt.compareSync(req.body.password, getEmail.password);
 
                 if (isValidPass == true) {
-                    res.status(200).send({ email: getEmail.email, name: getEmail.name, datetime: getEmail.datetime });
+                    const singJWTToken = jwt.sign({ email: getEmail.email, name: getEmail.name, datetime: getEmail.datetime },'c6f6a6aff6f81ba0a6a121542ea81a9f332fa654989ab5b9989d9e6963a701c36d3190e5365693ad6ad3d703eb0dd1cf0da5a89494764031369d4ad0');
+                    
+                    res.status(200).send({ email: getEmail.email, name: getEmail.name, datetime: getEmail.datetime,token : singJWTToken });
                 }
                 else {
                     res.status(400).end('Your password is wrong');
@@ -132,5 +159,6 @@ app.post('/verify-login', parseJSon, (req, res) => {
         }
     })
 });
+
 
 app.listen(9000, () => { });
