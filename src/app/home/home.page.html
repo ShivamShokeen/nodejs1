@@ -5,10 +5,10 @@
     </ion-buttons>
     <ion-title>
       <ion-text>GG Games</ion-text>
-      <ion-text *ngIf="userDetailsLocalStorage != null" (click)="logout()" class="logoutcss">Logout</ion-text>
-      <ion-text *ngIf="userDetailsLocalStorage == null" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign in'}" class="logincss">Sign In</ion-text>
+      <ion-text *ngIf="userDetailsCookie != null" (click)="logout()" class="logoutcss">Logout</ion-text>
+      <ion-text *ngIf="userDetailsCookie == null" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign in'}" class="logincss">Sign In</ion-text>
       &nbsp;&nbsp;
-      <ion-text *ngIf="userDetailsLocalStorage == null" class="registercss" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign up'}">Sign Up </ion-text> 
+      <ion-text *ngIf="userDetailsCookie == null" class="registercss" [routerLink]="['/signupsignin']" [queryParams]="{type : 'sign up'}">Sign Up </ion-text> 
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -25,7 +25,7 @@
         <ion-text><b>Description : </b> {{games.description ? games.description : 'N/A'}}</ion-text><br> <br>
         <ion-text><b>Category :</b> {{games.category ? games.category : 'N/A'}}</ion-text><br><br>
         <ion-text> <b>Price :</b> {{games.price ? games.price : 'N/A'}} </ion-text> <br> <br>
-        <ion-button [disabled]="userDetailsLocalStorage == null ? true : false" color="success" shape="round">Add to cart</ion-button>
+        <ion-button [disabled]="userDetailsCookie == null ? true : false" color="success" shape="round">Add to cart</ion-button>
       </ion-col>
       <div class="hr"> </div>
     </ion-row>

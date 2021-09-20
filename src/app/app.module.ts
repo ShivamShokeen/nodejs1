@@ -8,13 +8,14 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptorService } from './token-interceptor.service';
+import { CookieService } from 'ngx-cookie-service';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,  HttpClientModule,],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },{
     provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi : true
-  }],
+  },CookieService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
