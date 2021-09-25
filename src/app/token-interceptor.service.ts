@@ -79,61 +79,6 @@ export class TokenInterceptorService implements HttpInterceptor {
       }).toPromise();
     }
   }
-
-  // intercept(req, next) {
-  //   let splitURL = req.url.split('/');
-  //   if (splitURL[splitURL.length - 1] != 'user/register_user' && splitURL[splitURL.length - 1] != 'jwt/verify_login') {
-  //     if (this.localStorageToken != null) {
-  //       // await this.refreshTokenHit();
-  //       let tokenR = req.clone({
-  //         setHeaders: {
-  //           'Authorization': 'Bearer ' + this.localStorageToken.sign_token
-  //         }
-  //       });
-  //       return next.handle(tokenR).pipe(catchError((response) => {
-
-  //         if (response.status === 403) {
-
-  //           // let latestRefreshToken: any;
-  //           // this.http.post('http://localhost:9000/jwt/refresh_token', { id: this.localStorageToken.id, sign_token: this.localStorageToken.sign_token, refresh_token: this.localStorageToken.refresh_token }).subscribe(responseData => {
-  //           //   latestRefreshToken = responseData;
-  //           //   console.log("responseData refresh", responseData);
-  //           //   if (responseData) {
-  //           //     this.cookieService.set('userDetails', JSON.stringify(responseData));
-  //           //     this.localStorageToken = JSON.parse(this.cookieService.get('userDetails'));
-  //           //     console.log("this.cookieService set",this.cookieService.get('userDetails'));     
-  //           //   }
-
-  //           // }, error => {
-  //           //   this.toastErrorMessage(error.error.message + " refresh_token API");
-  //           // });
-
-  //           console.log("this.cookieService set auth",this.cookieService.get('userDetails'));   
-  //           console.log("this.localStorageToken.sign_token auth",this.localStorageToken.sign_token);
-  //           return next.handle(req.clone({
-  //             setHeaders: { "Authorization": `Bearer ${this.localStorageToken.sign_token}` }
-  //           }));
-
-  //         }
-  //         // logout on refresh token expire
-  //         if (response.status == 400) {
-  //           this.cookieService.deleteAll();
-  //           this.toastErrorMessage('Token is expired. Please re-login');
-  //           this.route.navigate(['/home']);
-  //         }
-  //       }), error => {
-  //         return error
-  //       });
-  //     }
-  //     else {
-  //       return next.handle(req);
-  //     }
-  //   }
-  //   else {
-  //     return next.handle(req);
-  //   }
-  // }
-
   async toastErrorMessage(message) {
     const toast = await this.toastController.create({
       message: message,
