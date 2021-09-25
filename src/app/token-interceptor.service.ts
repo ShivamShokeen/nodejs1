@@ -11,8 +11,9 @@ export class TokenInterceptorService implements HttpInterceptor {
 
   localStorageToken: any;
   constructor(private cookieService: CookieService,public http: HttpClient) {
-    if (cookieService.get('userDetails')) {
-      this.localStorageToken = JSON.parse(cookieService.get('userDetails'));
+    // console.log(this.cookieService.get('userDetails'));
+    if (this.cookieService.get('userDetails')) {
+      this.localStorageToken = JSON.parse(this.cookieService.get('userDetails'));
       console.log("this.localStorageToken", this.localStorageToken);
       // refresh_token
     }
@@ -21,25 +22,27 @@ export class TokenInterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let splitURL = req.url.split('/');
-    if (splitURL[splitURL.length - 1] != 'add-registration' && splitURL[splitURL.length - 1] != 'verify-login') {
+    if (splitURL[splitURL.length - 1] != 'user/register_user' && splitURL[splitURL.length - 1] != 'jwt/verify_login') {
       if (this.localStorageToken != null) {
         let tokenR = req.clone({
           setHeaders: {
             'Authorization': 'Bearer ' + this.localStorageToken.sign_token
           }
         });
-        // this.http.post('http://localhost:9000/refresh-token',{id : this.localStorageToken.id , sign_token : this.localStorageToken.sign_token,refresh_token : this.localStorageToken.refresh_token }).subscribe(responseData =>{
-        //   // latestRefreshToken = responseData;
-        //   console.log("responseData",responseData);
-        // });
         return next.handle(tokenR).pipe(catchError((response) => {
           console.log("response", response);
           console.log("response", response.body);
           if (response.status === 403) {
            let latestRefreshToken : any;
-            this.http.post('http://localhost:9000/refresh-token',{id : this.localStorageToken.id , sign_token : this.localStorageToken.sign_token,refresh_token : this.localStorageToken.refresh_token }).subscribe(responseData =>{
+            this.http.post('http://localhost:9000/jwt/refresh_token',{id : this.localStorageToken.id , sign_token : this.localStorageToken.sign_token,refresh_token : this.localStorageToken.refresh_token }).subscribe(responseData =>{
               latestRefreshToken = responseData;
-              console.log("responseData",responseData);
+              console.log("responseData refresh",responseData);
+              if(responseData){
+                this.cookieService.set('userDetails cookie', JSON.stringify(responseData));
+                this.localStorageToken = JSON.parse(this.cookieService.get('userDetails'));
+                console.log("this.localStorageToken refresh seet", this.localStorageToken);
+              }
+              
             });
             return next.handle(req.clone({
               setHeaders: { "Authorization": `Bearer ${this.localStorageToken.sign_token}` }

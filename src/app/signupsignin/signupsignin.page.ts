@@ -32,7 +32,7 @@ export class SignupsigninPage implements OnInit {
   save(type) {
     if (type == 'register') {
       if (this.registerForm.valid) {
-        this.http.post('http://localhost:9000/add-registration', this.registerForm.value).subscribe((responseData: any) => {
+        this.http.post('http://localhost:9000/user/register_user', this.registerForm.value).subscribe((responseData: any) => {
           let getResponse: any = { id: responseData.id, sign_token: responseData.sign_token, refresh_token: responseData.refresh_token };
           this.cookieService.set('userDetails', JSON.stringify(getResponse));
           this.router.navigate(['/home']).then(() => { window.location.reload() });
@@ -58,9 +58,10 @@ export class SignupsigninPage implements OnInit {
     }
     if (type == 'login') {
       if (this.loginForm.valid) {
-        this.http.post('http://localhost:9000/verify-login', this.loginForm.value).subscribe((responseData: any) => {
+        this.http.post('http://localhost:9000/jwt/verify_login', this.loginForm.value).subscribe((responseData: any) => {
           let getResponse: any = { id: responseData.id, sign_token: responseData.sign_token, refresh_token: responseData.refresh_token };
           this.cookieService.set('userDetails', JSON.stringify(getResponse));
+          console.log(this.cookieService.get('userDetails'));
           this.router.navigate(['/home']).then(() => { window.location.reload() });
           // this.router.navigate(['/home']);
         }, error => {
