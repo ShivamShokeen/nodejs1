@@ -27,6 +27,12 @@ export class HomePage implements OnInit {
     
   }
 
+  hitAgain(){
+    this.http.get('http://localhost:9000/get-games', {}).subscribe((responseData) => {
+      this.gamesList = responseData;
+    });
+  }
+
   logout() {
     localStorage.clear();
     this.cookieService.delete('userDetails');

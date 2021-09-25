@@ -74,7 +74,7 @@ async function refreshToken(req, res) {
 
     jwt.verify(req.body.refresh_token, tokenConfig.REFRESH_TOKEN_SECRET, (err, payload) => {
         if (err) {
-            console.log("err", err);
+            console.log("err refreshToken", err);
             res.status(400).send(err);
         }
         else {
